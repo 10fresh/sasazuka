@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>10FRESH 笹塚店 口コミアンケート</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #8c7b6c;
+      --gold: #bf9f62;
+      --bg: #fdfcf8;
+      --text: #4a4a4a;
+    }
+
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background-color: var(--bg);
+      margin: 0; padding: 0;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: rgba(140, 123, 108, 0.1);
+    }
+
+    .container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(0,0,0,0.02);
+    }
+
+    .progress-container { height: 4px; background: #eee; width: 100%; }
+    .progress-bar { 
+      height: 100%; 
+      background: var(--primary); 
+      width: 0%; 
+      transition: width 0.3s ease-out;
+      will-change: width;
+    }
+
+    .step { 
+      display: none; 
+      padding: 30px 20px; 
+      flex: 1; 
+      opacity: 0; 
+      transform: translateY(10px); 
+      transition: opacity 0.3s ease-out, transform 0.3s ease-out; 
+      will-change: opacity, transform;
+    }
+    .step.active { display: flex; flex-direction: column; opacity: 1; transform: translateY(0); }
+
+    .logo-text { text-align: center; color: #5aab8a; font-size: 2rem; font-weight: 700; margin: 20px 0 5px; letter-spacing: 0.1em; }
+    .logo-sub { text-align: center; font-size: 0.75rem; color: #999; letter-spacing: 0.2em; margin-bottom: 20px; }
+    
+    h2 { color: var(--primary); text-align: center; font-size: 1.1rem; margin-bottom: 15px; font-weight: 500; }
+    .intro-text { text-align: center; line-height: 1.8; font-size: 0.9rem; color: #666; margin-bottom: 30px; }
+    .q-label { font-weight: 700; font-size: 1.05rem; margin-bottom: 20px; text-align: center; color: var(--primary); line-height: 1.5; }
+    .q-sub { font-size: 0.8rem; font-weight: normal; color: #999; }
+
+    .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+    
+    .option-btn { 
+      background: #fff; border: 1px solid #e0e0e0; padding: 15px 5px; border-radius: 12px; 
+      font-size: 0.9rem; cursor: pointer; text-align: center; color: #666; 
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+      touch-action: manipulation;
+    }
+    .option-btn.selected { background: var(--primary); border-color: var(--primary); color: white; box-shadow: 0 4px 10px rgba(140, 123, 108, 0.2); }
+
+    .single-option { 
+      width: 100%; text-align: left; padding: 18px 20px; margin-bottom: 12px; 
+      background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; 
+      font-size: 0.95rem; cursor: pointer; color: #555; box-sizing: border-box; 
+      display: flex; justify-content: space-between; align-items: center; 
+      transition: background 0.2s;
+      touch-action: manipulation;
+    }
+    .single-option::after { content: '›'; font-size: 1.5rem; color: #ddd; }
+    .single-option.selected { background: var(--primary); border-color: var(--primary); color: white; }
+    .single-option.selected::after { color: rgba(255,255,255,0.5); }
+
+    .action-btn { 
+      width: 100%; padding: 18px; border-radius: 50px; font-size: 1rem; font-weight: 700; 
+      cursor: pointer; border: none; margin-top: auto; color: white; transition: opacity 0.2s; 
+      touch-action: manipulation;
+    }
+    .next-btn { background: var(--primary); box-shadow: 0 4px 10px rgba(140, 123, 108, 0.2); }
+    .next-btn:disabled { background: #e0e0e0; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
+    .final-btn { background: #5aab8a; margin-top: 20px; box-shadow: 0 4px 10px rgba(90, 171, 138, 0.3); }
+
+    .review-box {
+      background: #fff; border: 1px solid var(--gold); padding: 25px;
+      border-radius: 8px; margin: 10px 0 30px; font-size: 0.95rem; line-height: 1.7;
+      white-space: pre-wrap; color: #444; box-shadow: 0 8px 25px -5px rgba(191, 159, 98, 0.1); 
+      position: relative;
+    }
+    .review-box::before {
+      content: '✍️ タップして編集'; position: absolute; top: -25px; right: 0;
+      font-size: 0.75rem; color: var(--gold); font-weight: 500;
+    }
+
+    .loading { text-align: center; padding-top: 60px; }
+    .spinner { width: 40px; height: 40px; border: 3px solid #f3f3f3; border-top: 3px solid var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; will-change: transform; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .loading-text { color: var(--gold); font-size: 0.85rem; letter-spacing: 0.05em; }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+    
+    <div id="step0" class="step active">
+      <h1 class="logo-text">10FRESH</h1>
+      <div class="logo-sub">HEAD SPA SALON</div>
+      <div style="margin-top:15px;">
+        <h2>ご来店ありがとうございます</h2>
+        <div class="intro-text">
+          施術の余韻をそのままに。<br>
+          1分で終わる簡単なアンケートに<br>
+          ご協力をお願いいたします。
+        </div>
+      </div>
+      <button class="action-btn next-btn" onclick="nextStep(1)">アンケートを始める</button>
+    </div>
+
+    <div id="step1" class="step">
+      <div class="q-label">Q1. 本日はどんなお悩みで<br>ご来店されましたか？<span class="q-sub">（複数選択可）</span></div>
+      <div class="option-grid">
+        <div class="option-btn" onclick="toggleOption(this, 'q1')">眼精疲労</div>
+        <div class="option-btn" onclick="toggleOption(this, 'q1')">頭の重さ・鈍痛</div>
+        <div class="option-btn" onclick="toggleOption(this, 'q1')">ストレス解消</div>
+        <div class="option-btn" onclick="toggleOption(this, 'q1')">リフレッシュ</div>
+        <div class="option-btn" onclick="toggleOption(this, 'q1')">睡眠不足</div>
+        <div class="option-btn" onclick="toggleOption(this, 'q1')">自分へのご褒美</div>
+      </div>
+      <button class="action-btn next-btn" id="btn-q1" disabled onclick="nextStep(2)">次へ進む</button>
+    </div>
+
+    <div id="step2" class="step">
+      <div class="q-label">Q2. 施術を受けてみて、<br>いかがでしたか？</div>
+      <div class="single-option" onclick="selectSingle(this, 'q2', 3)">いつの間にか寝てしまった（寝落ち）</div>
+      <div class="single-option" onclick="selectSingle(this, 'q2', 3)">力加減が最高に気持ちよかった</div>
+      <div class="single-option" onclick="selectSingle(this, 'q2', 3)">香りや店内の雰囲気に癒やされた</div>
+      <div class="single-option" onclick="selectSingle(this, 'q2', 3)">スタッフの対応が丁寧で安心できた</div>
+    </div>
+
+    <div id="step3" class="step">
+      <div class="q-label">Q3. 施術後の「今の気分」を<br>教えてください</div>
+      <div class="single-option" onclick="selectSingle(this, 'q3', 4)">目がパッチリして視界が明るい！</div>
+      <div class="single-option" onclick="selectSingle(this, 'q3', 4)">頭のモヤモヤが消えてスッキリ！</div>
+      <div class="single-option" onclick="selectSingle(this, 'q3', 4)">体が軽くなって今夜は熟睡できそう</div>
+      <div class="single-option" onclick="selectSingle(this, 'q3', 4)">明日からまた仕事を頑張れそう</div>
+    </div>
+
+    <div id="step4" class="step">
+      <div id="loadingView" class="loading">
+        <div class="spinner"></div>
+        <p class="loading-text">文章を整えています...</p>
+      </div>
+      
+      <div id="resultView" style="display:none;">
+        <h2 style="margin-top:20px; color:#bf9f62;">ありがとうございます</h2>
+        <p style="text-align:center; font-size:0.85rem; color:#888;">以下の文章が作成されました。<br>修正してから投稿できます。</p>
+        
+        <div class="review-box" id="reviewText" contenteditable="true" onclick="this.focus()"></div>
+        
+        <button class="action-btn final-btn" onclick="copyAndOpenMap()">コピーしてGoogle投稿へ</button>
+        <p style="text-align:center; font-size:0.8rem; color:#aaa; margin-top:15px;">※自動的に投稿画面が開きます</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- 【重要】笹塚店用に作成する新しいGASのURLをここに入れてください ---
+    const GAS_URL = "ここに新しいGASのURLを貼り付け";
+
+    let answers = { q1: [], q2: "", q3: "" };
+
+    function nextStep(n) {
+      const current = document.querySelector('.step.active');
+      if(current) current.classList.remove('active');
+      
+      requestAnimationFrame(() => {
+        const next = document.getElementById('step' + n);
+        next.classList.add('active');
+        window.scrollTo(0, 0); 
+        const progress = (n / 4) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+      });
+    }
+
+    function toggleOption(el, q) {
+      el.classList.toggle('selected');
+      const text = el.innerText;
+      if (el.classList.contains('selected')) answers[q].push(text);
+      else answers[q] = answers[q].filter(t => t !== text);
+      document.getElementById('btn-q1').disabled = (answers[q].length === 0);
+    }
+
+    function selectSingle(el, q, nextStepNum) {
+      answers[q] = el.innerText;
+      el.parentElement.querySelectorAll('.single-option').forEach(opt => opt.classList.remove('selected'));
+      el.classList.add('selected');
+      
+      setTimeout(() => { 
+        if(nextStepNum === 4) generateReview(); 
+        nextStep(nextStepNum); 
+      }, 250);
+    }
+
+    function generateReview() {
+      const feedback = `悩み：${answers.q1.join('、')}\n感想：${answers.q2}\n気分：${answers.q3}`;
+      
+      fetch(GAS_URL, {
+        method: "POST",
+        body: JSON.stringify({ feedback: feedback })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('loadingView').style.display = 'none';
+        document.getElementById('resultView').style.display = 'block';
+        document.getElementById('reviewText').innerText = data.review;
+      })
+      .catch(err => {
+        alert("通信エラーが発生しました。GASのURLが正しいか確認してください。");
+        console.error(err);
+      });
+    }
+
+    function copyAndOpenMap() {
+      const text = document.getElementById('reviewText').innerText;
+      // 笹塚店のPlace IDを使用した投稿URL
+      const url = "https://search.google.com/local/writereview?placeid=ChIJ3xWYFRrzGGARn-jdI_6dXaA";
+      navigator.clipboard.writeText(text).then(() => {
+        alert("文章をコピーしました！\nGoogle投稿画面へ移動します。");
+        window.open(url, '_blank'); 
+      }).catch(err => { 
+        window.open(url, '_blank'); 
+      });
+    }
+  </script>
+</body>
+</html>
