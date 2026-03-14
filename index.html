@@ -65,7 +65,7 @@
     .q-label { font-weight: 700; font-size: 1.05rem; margin-bottom: 20px; text-align: center; color: var(--primary); line-height: 1.5; }
     .q-sub { font-size: 0.8rem; font-weight: normal; color: #999; }
 
-    .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+    .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
     
     .option-btn { 
       background: #fff; border: 1px solid #e0e0e0; padding: 15px 5px; border-radius: 12px; 
@@ -87,13 +87,33 @@
     .single-option.selected { background: var(--primary); border-color: var(--primary); color: white; }
     .single-option.selected::after { color: rgba(255,255,255,0.5); }
 
+    /* ★追加：「その他」の入力欄デザイン */
+    .other-input {
+      width: 100%; padding: 15px; margin-bottom: 15px;
+      background: #fff; border: 1px solid #e0e0e0; border-radius: 12px;
+      font-size: 0.95rem; box-sizing: border-box;
+      display: none;
+      font-family: inherit; color: #555;
+      transition: border-color 0.2s;
+    }
+    .other-input:focus { outline: none; border-color: var(--primary); border-width: 2px; padding: 14px; }
+
+    /* ★追加：戻る・次へを並べるエリア */
+    .nav-buttons { display: flex; gap: 10px; margin-top: auto; padding-top: 20px; }
+    .nav-buttons .action-btn { margin-top: 0; flex: 1; }
+
     .action-btn { 
-      width: 100%; padding: 18px; border-radius: 50px; font-size: 1rem; font-weight: 700; 
-      cursor: pointer; border: none; margin-top: auto; color: white; transition: opacity 0.2s; 
+      width: 100%; padding: 16px; border-radius: 50px; font-size: 1rem; font-weight: 700; 
+      cursor: pointer; border: none; color: white; transition: opacity 0.2s; 
       touch-action: manipulation;
     }
     .next-btn { background: var(--primary); box-shadow: 0 4px 10px rgba(140, 123, 108, 0.2); }
     .next-btn:disabled { background: #e0e0e0; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
+    
+    /* ★追加：戻るボタンデザイン */
+    .back-btn { background: #fff; color: #8c7b6c; border: 2px solid #e8e2d8; box-shadow: none; }
+    .back-btn:hover { background: #fdfcf8; }
+
     .final-btn { background: #5aab8a; margin-top: 20px; box-shadow: 0 4px 10px rgba(90, 171, 138, 0.3); }
 
     .review-box {
@@ -130,7 +150,7 @@
           ご協力をお願いいたします。
         </div>
       </div>
-      <button class="action-btn next-btn" onclick="nextStep(1)">アンケートを始める</button>
+      <button class="action-btn next-btn" style="margin-top:auto;" onclick="nextStep(1)">アンケートを始める</button>
     </div>
 
     <div id="step1" class="step">
@@ -142,24 +162,47 @@
         <div class="option-btn" onclick="toggleOption(this, 'q1')">リフレッシュ</div>
         <div class="option-btn" onclick="toggleOption(this, 'q1')">睡眠不足</div>
         <div class="option-btn" onclick="toggleOption(this, 'q1')">自分へのご褒美</div>
+        <div class="option-btn" onclick="toggleOption(this, 'q1')">その他</div>
       </div>
-      <button class="action-btn next-btn" id="btn-q1" disabled onclick="nextStep(2)">次へ進む</button>
+      
+      <input type="text" id="q1-other" class="other-input" placeholder="具体的なお悩みをご記入ください">
+
+      <div class="nav-buttons">
+        <button class="action-btn back-btn" onclick="nextStep(0)">戻る</button>
+        <button class="action-btn next-btn" id="btn-q1" disabled onclick="nextStep(2)">次へ進む</button>
+      </div>
     </div>
 
     <div id="step2" class="step">
       <div class="q-label">Q2. 施術を受けてみて、<br>いかがでしたか？</div>
-      <div class="single-option" onclick="selectSingle(this, 'q2', 3)">いつの間にか寝てしまった（寝落ち）</div>
-      <div class="single-option" onclick="selectSingle(this, 'q2', 3)">力加減が最高に気持ちよかった</div>
-      <div class="single-option" onclick="selectSingle(this, 'q2', 3)">香りや店内の雰囲気に癒やされた</div>
-      <div class="single-option" onclick="selectSingle(this, 'q2', 3)">スタッフの対応が丁寧で安心できた</div>
+      <div class="single-option" onclick="selectSingle(this, 'q2')">いつの間にか寝てしまった（寝落ち）</div>
+      <div class="single-option" onclick="selectSingle(this, 'q2')">力加減が最高に気持ちよかった</div>
+      <div class="single-option" onclick="selectSingle(this, 'q2')">香りや店内の雰囲気に癒やされた</div>
+      <div class="single-option" onclick="selectSingle(this, 'q2')">スタッフの対応が丁寧で安心できた</div>
+      <div class="single-option" onclick="selectSingleOther(this, 'q2')">その他</div>
+      
+      <input type="text" id="q2-other" class="other-input" placeholder="具体的な感想をご記入ください">
+
+      <div class="nav-buttons">
+        <button class="action-btn back-btn" onclick="nextStep(1)">戻る</button>
+        <button class="action-btn next-btn" id="btn-q2" disabled onclick="nextStep(3)">次へ進む</button>
+      </div>
     </div>
 
     <div id="step3" class="step">
       <div class="q-label">Q3. 施術後の「今の気分」を<br>教えてください</div>
-      <div class="single-option" onclick="selectSingle(this, 'q3', 4)">目がパッチリして視界が明るい！</div>
-      <div class="single-option" onclick="selectSingle(this, 'q3', 4)">頭のモヤモヤが消えてスッキリ！</div>
-      <div class="single-option" onclick="selectSingle(this, 'q3', 4)">体が軽くなって今夜は熟睡できそう</div>
-      <div class="single-option" onclick="selectSingle(this, 'q3', 4)">明日からまた仕事を頑張れそう</div>
+      <div class="single-option" onclick="selectSingle(this, 'q3')">目がパッチリして視界が明るい！</div>
+      <div class="single-option" onclick="selectSingle(this, 'q3')">頭のモヤモヤが消えてスッキリ！</div>
+      <div class="single-option" onclick="selectSingle(this, 'q3')">体が軽くなって今夜は熟睡できそう</div>
+      <div class="single-option" onclick="selectSingle(this, 'q3')">明日からまた仕事を頑張れそう</div>
+      <div class="single-option" onclick="selectSingleOther(this, 'q3')">その他</div>
+      
+      <input type="text" id="q3-other" class="other-input" placeholder="具体的な気分をご記入ください">
+
+      <div class="nav-buttons">
+        <button class="action-btn back-btn" onclick="nextStep(2)">戻る</button>
+        <button class="action-btn next-btn" id="btn-q3" disabled onclick="processGoToGenerate()">結果を見る</button>
+      </div>
     </div>
 
     <div id="step4" class="step">
@@ -181,7 +224,7 @@
   </div>
 
   <script>
-    // --- 【重要】笹塚店用に作成する新しいGASのURLをここに入れてください ---
+    // --- 【重要】笹塚店用のGAS_URL（変更しないでください） ---
     const GAS_URL = "https://script.google.com/macros/s/AKfycbzNEBZ-PcjOiJ2ZfLzHr4EWKD_-_N6Ex_3IMAE9WzSTkXo-nWZmnFoD-_cOefIHdOTn/exec";
 
     let answers = { q1: [], q2: "", q3: "" };
@@ -199,27 +242,83 @@
       });
     }
 
+    // Q1用（複数選択）
     function toggleOption(el, q) {
       el.classList.toggle('selected');
       const text = el.innerText;
+      
       if (el.classList.contains('selected')) answers[q].push(text);
       else answers[q] = answers[q].filter(t => t !== text);
+      
+      // 「その他」が選ばれたら入力欄を表示
+      if (text === 'その他') {
+        const otherInput = document.getElementById(q + '-other');
+        if (el.classList.contains('selected')) {
+          otherInput.style.display = 'block';
+          otherInput.focus();
+        } else {
+          otherInput.style.display = 'none';
+        }
+      }
+
       document.getElementById('btn-q1').disabled = (answers[q].length === 0);
     }
 
-    function selectSingle(el, q, nextStepNum) {
+    // Q2, Q3 通常選択肢用
+    function selectSingle(el, q) {
       answers[q] = el.innerText;
       el.parentElement.querySelectorAll('.single-option').forEach(opt => opt.classList.remove('selected'));
       el.classList.add('selected');
       
-      setTimeout(() => { 
-        if(nextStepNum === 4) generateReview(); 
-        nextStep(nextStepNum); 
-      }, 250);
+      // 入力欄を隠し、次へボタンを有効化
+      document.getElementById(q + '-other').style.display = 'none';
+      document.getElementById('btn-' + q).disabled = false;
+    }
+
+    // Q2, Q3 「その他」用
+    function selectSingleOther(el, q) {
+      answers[q] = 'その他';
+      el.parentElement.querySelectorAll('.single-option').forEach(opt => opt.classList.remove('selected'));
+      el.classList.add('selected');
+      
+      // 入力欄を表示し、次へボタンを有効化
+      const otherInput = document.getElementById(q + '-other');
+      otherInput.style.display = 'block';
+      otherInput.focus();
+      document.getElementById('btn-' + q).disabled = false;
+    }
+
+    // AI生成へ進む
+    function processGoToGenerate() {
+      generateReview();
+      nextStep(4);
     }
 
     function generateReview() {
-      const feedback = `悩み：${answers.q1.join('、')}\n感想：${answers.q2}\n気分：${answers.q3}`;
+      // Q1の集計
+      let q1Ans = [...answers.q1];
+      let q1OtherText = document.getElementById('q1-other').value.trim();
+      if (q1Ans.includes('その他') && q1OtherText) {
+        q1Ans.push(q1OtherText);
+      }
+      q1Ans = q1Ans.filter(item => item !== 'その他');
+      if (q1Ans.length === 0) q1Ans = ["特になし"];
+
+      // Q2の集計
+      let q2Ans = answers.q2;
+      if (q2Ans === 'その他') {
+        let text = document.getElementById('q2-other').value.trim();
+        q2Ans = text ? text : '特に無し';
+      }
+
+      // Q3の集計
+      let q3Ans = answers.q3;
+      if (q3Ans === 'その他') {
+        let text = document.getElementById('q3-other').value.trim();
+        q3Ans = text ? text : '特に無し';
+      }
+
+      const feedback = `悩み：${q1Ans.join('、')}\n感想：${q2Ans}\n気分：${q3Ans}`;
       
       fetch(GAS_URL, {
         method: "POST",
@@ -232,14 +331,14 @@
         document.getElementById('reviewText').innerText = data.review;
       })
       .catch(err => {
-        alert("通信エラーが発生しました。GASのURLが正しいか確認してください。");
+        alert("通信エラーが発生しました。時間をおいて再度お試しください。");
         console.error(err);
       });
     }
 
     function copyAndOpenMap() {
       const text = document.getElementById('reviewText').innerText;
-      // 笹塚店のPlace IDを使用した投稿URL
+      // 笹塚店のPlace IDを使用した投稿URL（変更しないでください）
       const url = "https://search.google.com/local/writereview?placeid=ChIJ3xWYFRrzGGARn-jdI_6dXaA";
       navigator.clipboard.writeText(text).then(() => {
         alert("文章をコピーしました！\nGoogle投稿画面へ移動します。");
